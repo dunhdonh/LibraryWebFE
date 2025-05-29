@@ -1,0 +1,263 @@
+import axios from "axios";
+import { useSelector } from "react-redux";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
+ //User API
+export const login = async (username, password) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/auth/login`, { username, password });
+        return response.data;
+    } catch (error) {
+        console.error("Login failed:", error);
+        throw error.response ? error.response.data : error;
+    }
+    }
+
+export const registerUser = async (userData) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/auth/register`, userData);
+        return response.data;
+    } catch (error) {
+        console.error("Registration failed:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const getUserProfile = async (userId) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await axios.get(`${BASE_URL}/users/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const updateUserProfile = async (userId, profileData) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await axios.put(`${BASE_URL}/users/${userId}`, profileData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Failed to update user profile:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const getAllUsers = async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}/users`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch users:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+export const deleteUser = async (userId) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await axios.delete(`${BASE_URL}/users/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to delete user:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const updateUserRole = async (userId, role) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await axios.put(`${BASE_URL}/users/${userId}/role`, { role }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to update user role:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+// Book API
+export const getAllBooks = async ({category, search}) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/books/get-all`,
+            {
+                params: {
+                    category: category || '',
+                    search: search || ''
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch books:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+export const getBookById = async (bookId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/books/${bookId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch book:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const getBooksByCategory = async (categoryId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/books/category/${categoryId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch books by category:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const addBook = async (bookData) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await axios.post(`${BASE_URL}/books`, bookData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to add book:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+export const updateBook = async (bookId, bookData) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await axios.put(`${BASE_URL}/books/${bookId}`, bookData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to update book:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+export const deleteBook = async (bookId) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await axios.delete(`${BASE_URL}/books/${bookId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to delete book:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const borrowBook = async (userId, bookId, status) => {
+    const token = localStorage.getItem('token');
+    console.log("Borrowing book with userId:", userId, "bookId:", bookId, "status:", status);
+    try {
+        const response = await axios.post(`${BASE_URL}/borrowings/create`, {userId, bookId, status} , {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to borrow book:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const getBorrowedBooks = async (userId, status) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await axios.get(`${BASE_URL}/borrowings/user/${userId}`, {
+            params: {status}, 
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch borrowed books:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const updateBorrowingStatus = async (borrowingId, status) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await axios.put(`${BASE_URL}/borrowings/${borrowingId}`, { status }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to update borrowing status:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+
+export const getAllCategories = async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}/categories/get-all`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const sendOTP = async (email) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/auth/forgot-password`, { email });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to send OTP:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const verifyOTP = async (token, otp) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/auth/verify-otp`, { token, otp });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to verify OTP:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const resetPassword = async (token, newPassword) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/auth/reset-password`, { token, newPassword });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to reset password:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
