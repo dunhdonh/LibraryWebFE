@@ -114,6 +114,17 @@ export const getAllUsers = async () => {
         throw error.response ? error.response.data : error;
     }
 }
+
+export const getUserByUsername = async (username) => {
+    try {
+        const response = await api.get(`/users/username/${username}`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch user by username:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
 export const deleteUser = async (userId) => {
     const token = localStorage.getItem('token');
     try {
@@ -187,6 +198,17 @@ export const getBookById = async (bookId) => {
     }
 }
 
+export const getBooksByTitle = async (title) => {
+    try {
+        const response = await api.get(`/books/title/${title}`);
+        console.log("Books fetched by title:", title, response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch books by title:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
 export const getBooksByCategory = async (categoryId) => {
     try {
         const response = await api.get(`/books/category/${categoryId}`);
@@ -240,11 +262,12 @@ export const deleteBook = async (bookId) => {
     }
 }
 
-export const borrowBook = async (userId, bookId, status) => {
+export const borrowBook = async (userId, bookId, status,  borrowDate, dueDate,) => {
     const token = localStorage.getItem('token');
-    console.log("Borrowing book with userId:", userId, "bookId:", bookId, "status:", status);
+
+    console.log("Borrowing book with userId:", userId, "bookId:", bookId, "borrowDate:", borrowDate, "dueDate:", dueDate, "status:", status);
     try {
-        const response = await api.post(`/borrowings/create`, { userId, bookId, status }, {
+        const response = await api.post(`/borrowings/create`, { userId, bookId, status, borrowDate, dueDate }, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -286,6 +309,52 @@ export const updateBorrowingStatus = async (borrowingId, status) => {
         throw error.response ? error.response.data : error;
     }
 }
+
+export const getAllBorrowings = async () => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await api.get(`/borrowings/get-all`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch all borrowings:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const getBorrowingById = async (borrowingId) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await api.get(`/borrowings/${borrowingId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch borrowing by ID:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+export const deleteBorrowing = async (borrowingId) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await api.delete(`/borrowings/${borrowingId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to delete borrowing:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
 
 
 export const getAllCategories = async () => {

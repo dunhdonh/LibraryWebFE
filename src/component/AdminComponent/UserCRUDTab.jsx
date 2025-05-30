@@ -3,7 +3,6 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { getAllUsers, updateUserProfile, getUserProfile, deleteUserByAdmin} from '../../API/apiCaller';
 import { useEffect } from 'react';
 import Alert from '../Alert';
-import User from '../../../../LibraryWebBE/models/User';
 const UserCRUDTable = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);

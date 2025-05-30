@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import BookCRUDTable from '../../component/AdminComponent/BookCRUDTable';
 import UserCRUDTable from '../../component/AdminComponent/UserCRUDTab';
+import BorrowingTab from '../../component/AdminComponent/BorrowingTab';
 import Alert from '../../component/Alert';
 import { useDispatch } from 'react-redux';
 import { setAvatar } from '../../redux/userSlice';
@@ -31,7 +32,7 @@ const AdminPage = () => {
                         {[
                             { key: 'summary', label: 'Tổng quan' },
                             { key: 'books', label: 'Sách' },
-                            { key: 'borrowing', label: 'Đơn mượn' },
+                            { key: 'borrowings', label: 'Đơn mượn' },
                             { key: 'users', label: 'Người dùng' },
                         ].map(tab => (
                             <button
@@ -51,7 +52,7 @@ const AdminPage = () => {
                 <div className="pt-6">
                     {activeTab === 'summary' && <div> Tổng quan ở đây</div>}    
                     {activeTab === 'books' && <BookCRUDTable />}
-                    {activeTab === 'borrowings' && <div> Danh sách đơn mượn ở đây</div>}
+                    {activeTab === 'borrowings' && <BorrowingTab />}
                     {activeTab === 'users' && <UserCRUDTable/>}
                 </div>
             </div>

@@ -56,7 +56,7 @@ const Header = () => {
         <nav className="hidden md:flex space-x-5 text-gray-700 font-medium">
           <Link to="/" className="hover:text-blue-600">Trang chủ</Link>
           <Link to="/books" className="hover:text-blue-600">Tìm kiếm</Link>
-          {user?.role === 'Reader' && (
+          {user && (
           <Link to="/my-reserving" className="hover:text-blue-600">Sách đã đặt</Link>
           )}
           {user?.role === 'Admin' && (
@@ -146,7 +146,7 @@ const Header = () => {
           <nav className="flex flex-col mb-3">
             <Link to="/" className="block text-gray-700 hover:text-blue-600 py-2 border-b border-gray-300" onClick={() => setIsOpen(false)}>Trang chủ</Link>
             <Link to="/books" className="block text-gray-700 hover:text-blue-600 py-2 border-b border-gray-300" onClick={() => setIsOpen(false)}>Tìm kiếm</Link>
-            {user?.role === 'Reader' && (
+            {user && (
               <Link
                 to="/my-reserving"
                 className="block text-gray-700 hover:text-blue-600 py-2 border-b border-gray-300"
