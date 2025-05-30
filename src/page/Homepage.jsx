@@ -79,6 +79,7 @@ const HomePage = () => {
                         {newBooks.map((book) => (
                             <BookCard
                                 book = {book}
+                                key={book._id}
                             />
                         ))}
                     </div>

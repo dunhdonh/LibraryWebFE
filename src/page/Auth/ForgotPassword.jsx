@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Step1 from "../component/ForgotPass/Step1";
-import Step2 from "../component/ForgotPass/Step2";
-import Step3 from "../component/ForgotPass/Step3";
-import { sendOTP, verifyOTP, resetPassword } from "../API/apiCaller";
-import Alert from "../component/Alert";
+import Step1 from "../../component/ForgotPass/Step1";
+import Step2 from "../../component/ForgotPass/Step2";
+import Step3 from "../../component/ForgotPass/Step3";
+import { sendOTP, verifyOTP, resetPassword } from "../../API/apiCaller";
+import Alert from "../../component/Alert";
 import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {

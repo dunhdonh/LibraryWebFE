@@ -1,21 +1,71 @@
 import axios from "axios";
-import { useSelector } from "react-redux";
-
 const BASE_URL = import.meta.env.VITE_API_URL;
- //User API
+
+const api = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    }
+});
+
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+api.interceptors.response.use(
+    res => res,
+    async error => {
+        const originalRequest = error.config;
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                const refreshToken = localStorage.getItem('refreshToken');
+                const response = await axios.post(`${BASE_URL}/auth/refresh-token`, { refreshToken });
+
+
+                const newAccessToken = response.data.accessToken;
+                localStorage.setItem('token', newAccessToken);
+                console.log("New access token:", newAccessToken);
+
+                // Update Authorization header and retry
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                return api(originalRequest);
+            } catch (err) {
+                // Handle refresh token failure, logout user
+                console.error("Refresh token failed:", err);
+                
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
+export default api;
+//User API
 export const login = async (username, password) => {
     try {
-        const response = await axios.post(`${BASE_URL}/auth/login`, { username, password });
+        const response = await api.post(`/auth/login`, { username, password });
         return response.data;
     } catch (error) {
         console.error("Login failed:", error);
         throw error.response ? error.response.data : error;
     }
-    }
+}
 
 export const registerUser = async (userData) => {
     try {
-        const response = await axios.post(`${BASE_URL}/auth/register`, userData);
+        const response = await api.post(`/auth/register`, userData);
         return response.data;
     } catch (error) {
         console.error("Registration failed:", error);
@@ -26,7 +76,7 @@ export const registerUser = async (userData) => {
 export const getUserProfile = async (userId) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.get(`${BASE_URL}/users/${userId}`, {
+        const response = await api.get(`/users/${userId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -41,7 +91,7 @@ export const getUserProfile = async (userId) => {
 export const updateUserProfile = async (userId, profileData) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.put(`${BASE_URL}/users/${userId}`, profileData,
+        const response = await api.put(`/users/${userId}`, profileData,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -57,7 +107,7 @@ export const updateUserProfile = async (userId, profileData) => {
 
 export const getAllUsers = async () => {
     try {
-        const response = await axios.get(`${BASE_URL}/users`);
+        const response = await api.get(`/users/get-all`);
         return response.data;
     } catch (error) {
         console.error("Failed to fetch users:", error);
@@ -67,7 +117,7 @@ export const getAllUsers = async () => {
 export const deleteUser = async (userId) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.delete(`${BASE_URL}/users/${userId}`, {
+        const response = await api.delete(`/users/${userId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -82,7 +132,7 @@ export const deleteUser = async (userId) => {
 export const updateUserRole = async (userId, role) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.put(`${BASE_URL}/users/${userId}/role`, { role }, {
+        const response = await api.put(`/users/${userId}/role`, { role }, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -94,10 +144,26 @@ export const updateUserRole = async (userId, role) => {
     }
 }
 
-// Book API
-export const getAllBooks = async ({category, search}) => {
+export const deleteUserByAdmin = async (userId) => {
+    const token = localStorage.getItem('token');
     try {
-        const response = await axios.get(`${BASE_URL}/books/get-all`,
+        const response = await api.delete(`/users/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Failed to delete user by admin:", error);
+        throw error.response ? error.response.data : error;
+    }
+}
+
+
+// Book API
+export const getAllBooks = async ({ category, search }) => {
+    try {
+        const response = await api.get(`/books/get-all`,
             {
                 params: {
                     category: category || '',
@@ -113,7 +179,7 @@ export const getAllBooks = async ({category, search}) => {
 }
 export const getBookById = async (bookId) => {
     try {
-        const response = await axios.get(`${BASE_URL}/books/${bookId}`);
+        const response = await api.get(`/books/${bookId}`);
         return response.data;
     } catch (error) {
         console.error("Failed to fetch book:", error);
@@ -123,7 +189,7 @@ export const getBookById = async (bookId) => {
 
 export const getBooksByCategory = async (categoryId) => {
     try {
-        const response = await axios.get(`${BASE_URL}/books/category/${categoryId}`);
+        const response = await api.get(`/books/category/${categoryId}`);
         return response.data;
     } catch (error) {
         console.error("Failed to fetch books by category:", error);
@@ -134,7 +200,7 @@ export const getBooksByCategory = async (categoryId) => {
 export const addBook = async (bookData) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.post(`${BASE_URL}/books`, bookData, {
+        const response = await api.post(`/books/create`, bookData, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -148,7 +214,7 @@ export const addBook = async (bookData) => {
 export const updateBook = async (bookId, bookData) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.put(`${BASE_URL}/books/${bookId}`, bookData, {
+        const response = await api.put(`/books/${bookId}`, bookData, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -162,7 +228,7 @@ export const updateBook = async (bookId, bookData) => {
 export const deleteBook = async (bookId) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.delete(`${BASE_URL}/books/${bookId}`, {
+        const response = await api.delete(`/books/${bookId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -178,7 +244,7 @@ export const borrowBook = async (userId, bookId, status) => {
     const token = localStorage.getItem('token');
     console.log("Borrowing book with userId:", userId, "bookId:", bookId, "status:", status);
     try {
-        const response = await axios.post(`${BASE_URL}/borrowings/create`, {userId, bookId, status} , {
+        const response = await api.post(`/borrowings/create`, { userId, bookId, status }, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -193,8 +259,8 @@ export const borrowBook = async (userId, bookId, status) => {
 export const getBorrowedBooks = async (userId, status) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.get(`${BASE_URL}/borrowings/user/${userId}`, {
-            params: {status}, 
+        const response = await api.get(`/borrowings/user/${userId}`, {
+            params: { status },
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -209,7 +275,7 @@ export const getBorrowedBooks = async (userId, status) => {
 export const updateBorrowingStatus = async (borrowingId, status) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.put(`${BASE_URL}/borrowings/${borrowingId}`, { status }, {
+        const response = await api.put(`/borrowings/${borrowingId}`, { status }, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -224,7 +290,7 @@ export const updateBorrowingStatus = async (borrowingId, status) => {
 
 export const getAllCategories = async () => {
     try {
-        const response = await axios.get(`${BASE_URL}/categories/get-all`);
+        const response = await api.get(`/categories/get-all`);
         return response.data;
     } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -234,7 +300,7 @@ export const getAllCategories = async () => {
 
 export const sendOTP = async (email) => {
     try {
-        const response = await axios.post(`${BASE_URL}/auth/forgot-password`, { email });
+        const response = await api.post(`/auth/forgot-password`, { email });
         return response.data;
     } catch (error) {
         console.error("Failed to send OTP:", error);
@@ -244,7 +310,7 @@ export const sendOTP = async (email) => {
 
 export const verifyOTP = async (token, otp) => {
     try {
-        const response = await axios.post(`${BASE_URL}/auth/verify-otp`, { token, otp });
+        const response = await api.post(`/auth/verify-otp`, { token, otp });
         return response.data;
     } catch (error) {
         console.error("Failed to verify OTP:", error);
@@ -254,7 +320,7 @@ export const verifyOTP = async (token, otp) => {
 
 export const resetPassword = async (token, newPassword) => {
     try {
-        const response = await axios.post(`${BASE_URL}/auth/reset-password`, { token, newPassword });
+        const response = await api.post(`/auth/reset-password`, { token, newPassword });
         return response.data;
     } catch (error) {
         console.error("Failed to reset password:", error);

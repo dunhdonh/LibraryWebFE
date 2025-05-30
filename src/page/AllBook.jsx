@@ -39,7 +39,7 @@ const AllBooks = () => {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
+    <div className="max-w-6xl min-h-screen mx-auto p-6 bg-white">
       <h2 className="text-2xl font-bold mb-4">Tất cả sách </h2>
 
       <div className="flex flex-col md:flex-row gap-4 mb-6">

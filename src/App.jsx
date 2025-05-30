@@ -1,13 +1,15 @@
 import Header from './component/Header'
 import Footer from './component/Footer'
 import Homepage from './page/Homepage'  
-import Login from './page/Login'
-import Register from './page/Register'
-import ForgotPassword from './page/ForgotPassword.jsx'
+import Login from './page/Auth/Login'
+import Register from './page/Auth/Register'
+import ForgotPassword from './page/Auth/ForgotPassword.jsx'
 import UserProfile from './page/UserProfile'
 import AllBooks from './page/AllBook.jsx'
 import BookDetail from './page/BookDetail.jsx'
 import MyReserving from './page/MyReserving.jsx'
+import AdminPage from './page/Admin/AdminPage.jsx'
+import RequireAdmin from './component/RequireAdmin.jsx'
 // import Settings from './component/Settings'
 import { Routes, Route } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
@@ -47,8 +49,12 @@ function App() {
           <Route path="/books" element={<AllBooks />} />
           <Route path="/book/:id" element={<BookDetail />} />
           <Route path="/my-reserving" element={<MyReserving />} />
-          {/* <Route path="/settings" element={<Settings />} /> */}
+          <Route path="/manage" element={<RequireAdmin />}>
+            <Route index element={<AdminPage />} />
+            {/* Add more admin routes here */}
+          </Route>
         </Routes>
+        
       </main>
       <Footer />
     </div>

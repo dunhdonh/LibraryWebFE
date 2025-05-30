@@ -30,7 +30,7 @@ const EditProfileForm = ({ user, onSubmit }) => {
 
     return (
         <div className="mb-6">
-
+            <h1 className="text-2xl font-bold mb-4">Chỉnh sửa thông tin cá nhân</h1>
             <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
                 <div>
                     <label className="block font-medium mb-1">Họ tên</label>

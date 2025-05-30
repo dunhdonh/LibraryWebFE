@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerUser } from '../API/apiCaller'; // Hàm gọi API đăng ký
+import { registerUser } from '../../API/apiCaller'; // Hàm gọi API đăng ký
 
 const Register = () => {
     const [username, setUsername] = useState('');

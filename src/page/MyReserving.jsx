@@ -44,7 +44,7 @@ const MyReserving = () => {
 
 
     return (
-        <div className="max-w-5xl min-h-screen mx-auto p-6 bg-white shadow rounded-lg">
+        <div className="max-w-6xl min-h-screen mx-auto p-6 bg-white ">
             <h1 className="text-2xl font-bold mb-4">Sách đã đặt</h1>
 
             {reservedBooks.length === 0 ? (

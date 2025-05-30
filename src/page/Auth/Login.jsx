@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { login } from '../API/apiCaller';
+import { login } from '../../API/apiCaller.js';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../redux/userSlice.js';
+import { setUser } from '../../redux/userSlice.js';
 import { useNavigate } from 'react-router-dom';
 
 

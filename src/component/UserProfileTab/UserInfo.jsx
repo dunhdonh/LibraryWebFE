@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux'; // nếu dùng Redux, hoặc truyền prop user
 
-const UserInfo = ({user}) => {
+const UserInfo = ({ user }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Thông tin cá nhân</h2>
+      <h1 className="text-2xl font-bold mb-4">Thông tin cá nhân</h1>
       <div className="flex items-start gap-6">
         <div className="space-y-5">
           <p><span className="font-medium">Họ tên:</span> {user.name || 'Chưa cập nhật'}</p>

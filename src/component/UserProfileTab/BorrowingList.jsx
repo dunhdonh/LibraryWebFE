@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Alert from '../component/Alert';
-import BorrowedBookCard from '../component/BorrowedBookCard';
-import { getBorrowedBooks, updateBorrowingStatus } from '../API/apiCaller';
+import Alert from '../Alert';
+import BorrowedBookCard from '../BorrowedBookCard';
+import { getBorrowedBooks, updateBorrowingStatus } from '../../API/apiCaller';
 
 const BorrowingList = () => {
     const user = useSelector((state) => state.user.currentUser);
@@ -13,7 +13,6 @@ const BorrowingList = () => {
         try {
             console.log("Cancelling reservation for borrow ID:", borrowId);
             await updateBorrowingStatus(borrowId, "cancelled");
-            setReservedBooks((prev) => prev.filter((borrow) => borrow._id !== borrowId));
             setAlert({ message: 'Đã hủy đặt sách thành công!', type: 'success', id: Date.now() });
         } catch (error) {
             console.error("Error cancelling reservation:", error);
@@ -42,7 +41,7 @@ const BorrowingList = () => {
 
 
     return (
-        <div className="max-w-5xl min-h-screen mx-auto p-6 bg-white shadow rounded-lg">
+        <div className="w-full min-h-screen mx-auto bg-white ">
             <h1 className="text-2xl font-bold mb-4">Sách đang mượn</h1>
 
             {reservedBooks.length === 0 ? (
