@@ -18,11 +18,13 @@
     "axios": "^1.9.0",
     "jwt-decode": "^4.0.0",
     "librarywebfe": "file:",
+    "lucide-react": "^0.511.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-redux": "^9.2.0",
     "react-responsive-carousel": "^3.2.23",
-    "react-router-dom": "^7.6.1"
+    "react-router-dom": "^7.6.1",
+    "recharts": "^2.15.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

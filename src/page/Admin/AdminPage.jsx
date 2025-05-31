@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import BookCRUDTable from '../../component/AdminComponent/BookCRUDTable';
 import UserCRUDTable from '../../component/AdminComponent/UserCRUDTab';
 import BorrowingTab from '../../component/AdminComponent/BorrowingTab';
+import SummaryTab from '../../component/AdminComponent/SummaryTab';
 import Alert from '../../component/Alert';
 import { useDispatch } from 'react-redux';
 import { setAvatar } from '../../redux/userSlice';
@@ -11,7 +12,7 @@ import { setAvatar } from '../../redux/userSlice';
 
 const AdminPage = () => {
     const user = useSelector((state) => state.user.currentUser);
-    const [activeTab, setActiveTab] = useState('info');
+    const [activeTab, setActiveTab] = useState('summary');
     const [alert, setAlert] = useState(null);
     const [books, setBooks] = useState([]);
     const navigate = useNavigate();
@@ -50,7 +51,7 @@ const AdminPage = () => {
 
                 {/* Nội dung tab */}
                 <div className="pt-6">
-                    {activeTab === 'summary' && <div> Tổng quan ở đây</div>}    
+                    {activeTab === 'summary' && <SummaryTab />}    
                     {activeTab === 'books' && <BookCRUDTable />}
                     {activeTab === 'borrowings' && <BorrowingTab />}
                     {activeTab === 'users' && <UserCRUDTable/>}

@@ -36,12 +36,17 @@ const HomePage = () => {
                     className="overflow-hidden shadow-lg "
                 >
                     <div>
-                        <img src="https://media.istockphoto.com/id/169993375/vi/anh/gi%C3%A1-s%C3%A1ch-b%C3%AAn-trong-th%C6%B0-vi%E1%BB%87n-c%C3%B4ng-c%E1%BB%99ng-stockholm.jpg?s=612x612&w=0&k=20&c=mS7c-qYohSNeW1mmjNQczSGUBtJMi3_RlnPgVJFgoEc="
+                        <img src="https://atd-bloges.s3.us-east-2.amazonaws.com/wp-content/uploads/2022/03/16132227/banner-graphic-1.webp"
+                            className="h-[300px] object-cover w-full object-center rounded-lg"
+                            alt="Thư viện 0" />
+                    </div>
+                    <div>
+                        <img src="https://marketplace.canva.com/EAF4n2WuNKc/2/0/1600w/canva-h%E1%BB%93ng-pastel-%C4%91en-n%E1%BB%95i-b%E1%BA%ADt-c%E1%BB%ADa-h%C3%A0ng-s%C3%A1ch-banner-JUT8DwjmSUI.jpg"
                             className="h-[300px] object-cover w-full object-center rounded-lg"
                             alt="Thư viện 1" />
                     </div>
                     <div>
-                        <img src="https://png.pngtree.com/thumb_back/fh260/background/20210902/pngtree-indoor-home-daytime-tables-chairs-bookshelves-library-photos-and-photos-image_789544.jpg"
+                        <img src="https://lic.huc.edu.vn/wp-content/uploads/2024/02/Book-Banner.jpg"
                             className="h-[300px] object-cover w-full object-center rounded-lg"
                             alt="Thư viện 2" />
                     </div>

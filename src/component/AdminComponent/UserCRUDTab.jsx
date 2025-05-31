@@ -11,6 +11,15 @@ const UserCRUDTable = () => {
     const [alert, setAlert] = useState(null);
     const [formData, setFormData] = useState({name: '', email: '', role: '', avatar: '', phone: '', address: ''});
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const filteredUsers = usersArray.filter(user => {
+        const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter ? user.role === statusFilter : true;
+        return matchesSearch && matchesStatus;
+    });
+
+
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -101,28 +110,49 @@ const UserCRUDTable = () => {
                 </button> */}
             </div>
 
+            <div className="flex gap-4 mb-4">
+                <input
+                    type="text"
+                    placeholder="Tìm theo username hoặc email"
+                    className="border p-2 rounded w-1/2"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <select
+                    className="border p-2 rounded"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                    <option value="">Tất cả vai trò</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Reader">Reader</option>
+
+                </select>
+            </div>
+
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white">
                     <thead className="bg-gray-100">
                         <tr>
-                            <th className="p-2"></th>
-                            <th className="p-2">Tên đăng nhập</th>
-                            <th className="p-2">Email</th>
+                            <th className="p-2 min-w-20"></th>
+                            <th className="p-2 text-left">Tên đăng nhập</th>
+                            <th className="p-2 ">Email</th>
                             <th className="p-2">Vai trò</th>
                             <th className="p-2"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {usersArray.map((user) => (
+                        {filteredUsers.map((user) => (
                             <tr key={user._id} className="text-center border-b">
                                 <td className="p-2 ">
                                     <img src={user.avatar} alt={user.username}     className="w-10 h-10 rounded-full object-cover mx-auto"
  />
                                 </td>
-                                <td className="p-2 ">{user.username}</td>
-                                <td className="p-2 ">{user.email}</td>
+                                <td className="p-2 text-left">{user.username}</td>
+                                <td className="p-2 text-left">{user.email}</td>
                                 <td className="p-2 ">{user.role}</td>
                                 <td className="p-2  space-x-2">
+                                    <div className="flex items-center justify-center">
                                     <button
                                         onClick={() => handleEditClick(user)}
                                         className="p-1 bg-yellow-100 rounded hover:bg-yellow-200 ml-2"
@@ -140,6 +170,7 @@ const UserCRUDTable = () => {
                                     >
                                         <TrashIcon className="h-5 w-5 text-red-600" />
                                     </button>
+                                    </div>
 
                                 </td>
                             </tr>

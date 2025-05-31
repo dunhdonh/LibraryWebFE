@@ -27,6 +27,17 @@ const BorrowingTab = () => {
     const [isSelectingUser, setIsSelectingUser] = useState(false);
     const [isSelectingBook, setIsSelectingBook] = useState(false);
 
+    const [statusFilter, setStatusFilter] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const filteredBorrowings = borrowingsArray.filter((borrowing) => {
+        const matchesStatus = statusFilter ? borrowing.status === statusFilter : true;
+        const matchesSearchTerm = searchTerm
+            ? borrowing.userId.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                borrowing.bookId?.title.toLowerCase().includes(searchTerm.toLowerCase())
+            : true;
+        return matchesStatus && matchesSearchTerm;
+    });
+
     const formatDate = (dateStr) => {
         const date = new Date(dateStr);
         return date.toLocaleDateString('vi-VN');
@@ -88,7 +99,6 @@ const BorrowingTab = () => {
             try {
                 const data = await getAllBorrowings();
                 setBorrowingsArray(data.borrowings);
-                console.log("Fetched borrowings:", data);
             } catch (error) {
                 console.error("Failed to fetch borrowings:", error);
             }
@@ -113,7 +123,6 @@ const BorrowingTab = () => {
         deleteBorrowing(borrowingId)
             .then(() => {
                 setBorrowingsArray(borrowingsArray.filter(borrowing => borrowing._id !== borrowingId));
-                console.log("Borrowing deleted successfully");
                 setAlert({
                     id: Date.now(),
                     message: "Xoá đơn mượn thành công",
@@ -130,11 +139,10 @@ const BorrowingTab = () => {
             });
     };
 
-    const handleUpdateBorrowingStatus = (borrowingId, newStatus) => {
-        updateBorrowingStatus(borrowingId, newStatus)
+    const handleUpdateBorrowingStatus = (borrowingId, newStatus, dueDate, returnDate) => {
+        updateBorrowingStatus(borrowingId, newStatus, dueDate, returnDate)
             .then((updatedBorrowing) => {
                 setBorrowingsArray(borrowingsArray.map(borrowing => borrowing._id === borrowingId ? updatedBorrowing : borrowing));
-                console.log("Borrowing status updated successfully");
                 setAlert({
                     id: Date.now(),
                     message: "Cập nhật trạng thái đơn mượn thành công",
@@ -160,7 +168,7 @@ const BorrowingTab = () => {
             setAlert({
                 id: Date.now(),
                 message: "Vui lòng chọn người dùng và sách trước khi tạo đơn mượn",
-                type: "error" 
+                type: "error"
             });
             return;
         }
@@ -231,6 +239,27 @@ const BorrowingTab = () => {
                     Tạo đơn
                 </button>
             </div>
+            <div className="flex gap-4 mb-4">
+                <input
+                    type="text"
+                    placeholder="Tìm theo tên người mượn hoặc sách"
+                    className="border p-2 rounded w-1/2"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <select
+                    className="border p-2 rounded"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="borrowed">Đang mượn</option>
+                    <option value="returned">Đã trả</option>
+                    <option value="late">Trễ</option>
+                    <option value="reserved">Đã đặt</option>
+                    <option value="cancelled">Đã huỷ</option>
+                </select>
+            </div>
 
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white">
@@ -239,23 +268,27 @@ const BorrowingTab = () => {
                             <th className="p-2">ID</th>
                             <th className="p-2 min-w-36">Tên sách</th>
                             <th className="p-2 min-w-36">Người mượn</th>
-                            <th className="p-2">Ngày đặt</th>
-                            <th className="p-2">Hạn</th>
-                            <th className="p-2 min-w-24">Trạng thái</th>
+                            <th className="p-2 text-center">Ngày đặt</th>
+                            <th className="p-2 text-center">Hạn</th>
+                            <th className="p-2 text-center">Ngày trả</th>
+                            <th className="p-2 min-w-24 text-center">Trạng thái</th>
                             <th className="p-2"></th>
                         </tr>
                     </thead>
+
+
                     <tbody>
-                        {borrowingsArray.map((borrowing) => (
+                        {filteredBorrowings.map((borrowing) => (
                             <tr key={borrowing._id} className="text-left border-b">
                                 <td className="p-1 ">
                                     #{borrowing._id.toString().slice(-6)}
                                 </td>
                                 <td className="p-2 ">{borrowing.bookId?.title ?? "không rõ"}</td>
                                 <td className="p-2 ">{borrowing.userId.name}</td>
-                                <td className="p-2 ">{formatDate(borrowing.borrowDate)}</td>
-                                <td className="p-2 ">{formatDate(borrowing.dueDate)}</td>
-                                <td className="p-2">
+                                <td className="p-2 text-center">{formatDate(borrowing.borrowDate)}</td>
+                                <td className="p-2 text-center">{formatDate(borrowing.dueDate)}</td>
+                                <td className="p-2 text-center">{borrowing.returnDate ? formatDate(borrowing.returnDate) : '-'}</td>
+                                <td className="p-2 text-center">
                                     <span
                                         className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${borrowing.status === 'borrowed' ? 'bg-yellow-100 text-yellow-800' :
                                             borrowing.status === 'returned' ? 'bg-green-100 text-green-800' :
@@ -279,41 +312,41 @@ const BorrowingTab = () => {
                                 <td >
                                     <div className="py-2 justify-end flex space-x-2">
                                         {
-                                        borrowing.status == 'borrowed' && (
-                                            <button  
-                                                onClick={() => {
-                                                    setSelectedBorrowing(borrowing);
-                                                    handleUpdateBorrowingStatus(borrowing._id, 'returned');
-                                                }}
-                                                className="p-1 bg-blue-500 rounded hover:bg-blue-600 ml-2 w-12 text-white">
-                                            Trả
-                                            </button>
-                                        )
-                                    }
+                                            borrowing.status == 'borrowed' && (
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedBorrowing(borrowing);
+                                                        handleUpdateBorrowingStatus(borrowing._id, 'returned', borrowing.dueDate, new Date().toISOString());
+                                                    }}
+                                                    className="p-1 bg-blue-500 rounded hover:bg-blue-600 ml-2 w-12 text-white">
+                                                    Trả
+                                                </button>
+                                            )
+                                        }
 
-                                    {
-                                        borrowing.status == 'reserved' && (
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedBorrowing(borrowing);
-                                                    handleUpdateBorrowingStatus(borrowing._id, 'borrowed');
-                                                }}
-                                                className="p-1 bg-green-500 rounded hover:bg-green-600 ml-2 w-12 text-white">
-                                                Lấy
-                                            </button>
-                                        )
-                                    }
-                                    <button
-                                        onClick={() => {
-                                            setSelectedBorrowing(borrowing);
-                                            setShowConfirm(true)
+                                        {
+                                            borrowing.status == 'reserved' && (
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedBorrowing(borrowing);
+                                                        handleUpdateBorrowingStatus(borrowing._id, 'borrowed', new Date().setDate(new Date().getDate() + 30));
+                                                    }}
+                                                    className="p-1 bg-green-500 rounded hover:bg-green-600 ml-2 w-12 text-white">
+                                                    Lấy
+                                                </button>
+                                            )
                                         }
-                                        }
-                                        className="p-1 bg-red-100 rounded hover:bg-red-200"
-                                        borrowingname="Xoá"
-                                    >
-                                        <TrashIcon className="h-5 w-5 text-red-600" />
-                                    </button>
+                                        <button
+                                            onClick={() => {
+                                                setSelectedBorrowing(borrowing);
+                                                setShowConfirm(true)
+                                            }
+                                            }
+                                            className="p-1 bg-red-100 rounded hover:bg-red-200"
+                                            borrowingname="Xoá"
+                                        >
+                                            <TrashIcon className="h-5 w-5 text-red-600" />
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -328,7 +361,7 @@ const BorrowingTab = () => {
                         <h3 className="text-xl font-semibold mb-4">Tạo đơn mượn</h3>
 
                         <form onSubmit={handleFormSubmit} className="space-y-3">
-                            <div className = "relative" >
+                            <div className="relative" >
                                 <label className="block mb-1 font-medium text-sm">Người mượn</label>
                                 <input
                                     type="text"
@@ -404,7 +437,7 @@ const BorrowingTab = () => {
                                 />
 
                                 {/* Hạn trả */}
-                                <label className="block mb-1 font-medium text-sm">Hạn trả</label>
+                                <label className="block mb-1 font-medium text-sm">Hạn</label>
                                 <input
                                     type="date"
                                     className="border p-2 w-full rounded mb-3"

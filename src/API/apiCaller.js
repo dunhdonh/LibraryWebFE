@@ -1,5 +1,8 @@
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_URL;
+import { jwtDecode } from 'jwt-decode';
+import store from '../redux/store.js';
+import { setUser } from '../redux/userSlice.js';
 
 const api = axios.create({
     baseURL: BASE_URL,
@@ -20,7 +23,6 @@ api.interceptors.request.use(
         return Promise.reject(error);
     }
 );
-
 api.interceptors.response.use(
     res => res,
     async error => {
@@ -33,9 +35,13 @@ api.interceptors.response.use(
                 const refreshToken = localStorage.getItem('refreshToken');
                 const response = await axios.post(`${BASE_URL}/auth/refresh-token`, { refreshToken });
 
-
                 const newAccessToken = response.data.accessToken;
                 localStorage.setItem('token', newAccessToken);
+                const decodedUser = jwtDecode(newAccessToken);
+                console.log("Decoded user from new access token:", decodedUser);
+                localStorage.setItem('user', decodedUser); // Lưu ID của user
+                store.dispatch(setUser(decodedUser)); // Cập nhật thông tin user vào Redux
+
                 console.log("New access token:", newAccessToken);
 
                 // Update Authorization header and retry
@@ -295,10 +301,10 @@ export const getBorrowedBooks = async (userId, status) => {
     }
 }
 
-export const updateBorrowingStatus = async (borrowingId, status) => {
+export const updateBorrowingStatus = async (borrowingId, status, dueDate, returnDate) => {
     const token = localStorage.getItem('token');
     try {
-        const response = await api.put(`/borrowings/${borrowingId}`, { status }, {
+        const response = await api.put(`/borrowings/${borrowingId}`, { status, dueDate, returnDate}, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

@@ -19,6 +19,7 @@ const UserProfile = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const storedUser = useSelector((state) => state.user.currentUser);
+    
     useEffect(() => {
         if (!storedUser) {
             navigate('/login');

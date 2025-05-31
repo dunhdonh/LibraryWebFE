@@ -3,13 +3,21 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import logo from '../assets/trans.png';
 import { logout } from '../redux/userSlice.js';
+import { jwtDecode } from 'jwt-decode'; // Thêm import jwtDecode
 
 const Header = () => {
-  const user = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
-  console.log(user);
   const [isOpen, setIsOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const [user, setUser] = useState(useSelector((state) => state.user.currentUser));
+  const token = localStorage.getItem('token');
+  useEffect(() => {
+    if (token) {
+      const decodedUser = jwtDecode(token);
+      setUser(decodedUser);
+    }
+  }, [token, dispatch]);
 
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);

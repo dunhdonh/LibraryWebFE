@@ -4,7 +4,6 @@ import {jwtDecode} from "jwt-decode";
 
 const RequireAdmin = () => {
   const user = useSelector((state) => state.user.currentUser);
-
   if (!user ) {
     alert("Bạn cần đăng nhập để truy cập trang này.");
     return <Navigate to="/login" replace />;

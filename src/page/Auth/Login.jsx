@@ -4,6 +4,7 @@ import { login } from '../../API/apiCaller.js';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../redux/userSlice.js';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 
 const Login = () => {
@@ -21,12 +22,14 @@ const Login = () => {
     // Lưu accessToken và refreshToken
     localStorage.setItem('token', data.token.accessToken);
     localStorage.setItem('refreshToken', data.token.refreshToken);
-    localStorage.setItem('user', JSON.stringify(data.token.user));
+    const decodedUser = jwtDecode(data.token.accessToken);
+
+
     // Lưu thông tin user vào localStorage
 
     // Cập nhật thông tin user vào Redux
-    dispatch(setUser(data.token.user));
-    console.log('Đăng nhập thành công:', data.token.user);
+    dispatch(setUser(decodedUser));
+    console.log('Đăng nhập thành công:', decodedUser);
 
     navigator('/'); // Chuyển hướng về trang chủ
   } catch (err) {

@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
+import {borrowBook} from '../API/apiCaller';
+import { useState } from 'react';
 
-const MegaBookCard = ({ book }) => {
-    const handleBorrow = () => {
-        alert(`Đã gửi yêu cầu mượn sách: ${book.title}`);
-    };
+const MegaBookCard = ({ book, onBorrow }) => {
 
     const getCategoryColor = (category) => {
         switch (category?.toLowerCase()) {
@@ -58,7 +57,7 @@ const MegaBookCard = ({ book }) => {
                     {/* Nút ở dưới cùng */}
                     <div className='flex justify-start'>
                         <button
-                            onClick={handleBorrow}
+                            onClick={onBorrow}
                             disabled={book.stock === 0}
                             className={`mt-3 py-1.5 rounded text-white text-sm transition w-40
                                     ${book.stock === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}
